@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    command: ./api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - server
+    networks:
+      - app_network
+
+  server:
+    build:
+      context: ./cluster/server
+      dockerfile: Dockerfile
+    command: ./server
+    ports:
+      - "9000:9000"
+    networks:
+      - app_network
+    depends_on:
+      - client1
+      - client2
+      - client3
+
+  client1:
+    build:
+      context: ./cluster/client
+      dockerfile: Dockerfile
+    command: ["./client", "9001"]
+    ports:
+      - "9001:9001"
+    networks:
+      - app_network
+
+  client2:
+    build:
+      context: ./cluster/client
+      dockerfile: Dockerfile
+    command: ["./client", "9002"]
+    ports:
+      - "9002:9002"
+    networks:
+      - app_network
+
+  client3:
+    build:
+      context: ./cluster/client
+      dockerfile: Dockerfile
+    command: ["./client", "9003"]
+    ports:
+      - "9003:9003"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
